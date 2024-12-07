@@ -13,7 +13,6 @@ Você pode baixar o dump do banco de dados diretamente do Google Drive:
 
 [Baixar dump do banco de dados](https://drive.google.com/uc?export=download&id=1N1zPytUrMxWywNdaZhJW-L-gHwAXJCY-)
 
-<center>
-  ## Feito por: João Vitor Firmiano
-  [Foto](https://drive.google.com/uc?export=view&id=1fjmlf9aLvvZLpuiZfRj4ALg8kvYPIgPP) 
-</center>
+## Feito por: João Vitor Firmiano
+[Foto](https://drive.google.com/uc?export=view&id=1fjmlf9aLvvZLpuiZfRj4ALg8kvYPIgPP) 
+
