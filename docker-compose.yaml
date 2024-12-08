@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: nestjs-app
+    ports:
+      - "3000:3000" # Porta do container mapeada para a porta da máquina host
+    environment:
+      DATABASE_HOST: "35.198.31.161"
+      DATABASE_PORT: "3306"
+      DATABASE_USER: "root"
+      DATABASE_PASSWORD: "Jv03284320114@"
+      JWT_SECRET: "segredaço"
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge

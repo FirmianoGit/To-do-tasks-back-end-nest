@@ -22,7 +22,6 @@ export const databaseProviders = [
           Statustarefa,
           Historicotarefa,
         ],
-        logging: true,
       });
 
       return dataSource.initialize();
