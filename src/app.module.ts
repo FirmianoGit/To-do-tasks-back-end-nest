@@ -6,9 +6,10 @@ import { UsuarioModule } from './usuario/usuario.module';
 import { JwtAuthGuard } from './auth/Guards/jwt-auth.guard';
 import { APP_GUARD } from '@nestjs/core';
 import { TarefasModule } from './tarefas/tarefas.module';
+import { StatisticsModule } from './statistics/statistics.module';
 
 @Module({
-  imports: [UsuarioModule, AuthModule, TarefasModule],
+  imports: [UsuarioModule, AuthModule, TarefasModule, StatisticsModule],
   controllers: [AppController],
   providers: [
     AppService,
