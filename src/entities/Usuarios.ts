@@ -1,15 +1,6 @@
-import {
-  Column,
-  Entity,
-  Index,
-  OneToMany,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Tarefas } from './Tarefas';
 
-// Decorador @Index para criar índices únicos nas colunas email e nomeUsuario
-@Index('email', ['email'], { unique: true }) // Cria um índice único para a coluna 'email'
-@Index('nomeUsuario', ['nomeUsuario'], { unique: true }) // Cria um índice único para a coluna 'nomeUsuario'
 @Entity('usuarios', { schema: 'teksystem' }) // Define a entidade 'Usuarios' para a tabela 'usuarios' no schema 'teksystem'
 export class Usuarios {
   // Coluna id gerada automaticamente como chave primária

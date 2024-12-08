@@ -1,8 +1,15 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  NotFoundException,
+  ConflictException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { Usuarios } from 'src/entities/Usuarios'; // Entidade de usuário
 import { Repository } from 'typeorm';
 import { CreateUsuarioDto } from './dto/create-usuario.dto'; // DTO para criar usuário
 import { UpdateUsuarioDto } from './dto/update-usuario.dto'; // DTO para atualizar usuário
+import * as bcrypt from 'bcrypt'; // Biblioteca para criptografia
 
 @Injectable()
 export class UsuarioService {
@@ -11,52 +18,81 @@ export class UsuarioService {
     private readonly usuariosRepository: Repository<Usuarios>, // Repositório de usuários
   ) {}
 
-  // Criar um novo usuário
   async create(createUsuarioDto: CreateUsuarioDto): Promise<Usuarios> {
-    // Criar o novo usuário
-    const usuario = this.usuariosRepository.create(createUsuarioDto);
+    try {
+      // Criptografar a senha antes de salvar no banco
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(createUsuarioDto.senha, salt);
 
-    // Salvar no banco de dados
-    return this.usuariosRepository.save(usuario);
+      // Substituir a senha pelo hash no DTO
+      createUsuarioDto.senha = hashedPassword;
+
+      // Criar o novo usuário
+      const usuario = this.usuariosRepository.create(createUsuarioDto);
+
+      // Salvar no banco de dados
+      return await this.usuariosRepository.save(usuario);
+    } catch (error) {
+      if (error.code === 'ER_DUP_ENTRY') {
+        throw new ConflictException('Email ou nome de usuário já cadastrados.');
+      }
+      throw new InternalServerErrorException('Erro ao criar usuário.');
+    }
   }
 
-  // Atualizar um usuário existente
   async update(
     id: number,
     updateUsuarioDto: UpdateUsuarioDto,
   ): Promise<Usuarios> {
-    const usuario = await this.usuariosRepository.findOne({ where: { id } });
+    try {
+      const usuario = await this.usuariosRepository.findOne({
+        where: { id: Number(id) },
+      });
 
-    if (!usuario) {
-      throw new NotFoundException(`Usuário com ID ${id} não encontrado.`);
+      if (!usuario) {
+        throw new NotFoundException(`Usuário com ID ${id} não encontrado.`);
+      }
+
+      Object.assign(usuario, updateUsuarioDto);
+
+      return await this.usuariosRepository.save(usuario);
+    } catch (error) {
+      throw new InternalServerErrorException('Erro ao atualizar usuário.');
     }
-
-    // Atualizar as informações do usuário
-    Object.assign(usuario, updateUsuarioDto);
-
-    return this.usuariosRepository.save(usuario);
   }
 
-  // Remover um usuário
   async remove(id: number): Promise<void> {
-    const usuario = await this.usuariosRepository.findOne({ where: { id } });
+    try {
+      const usuario = await this.usuariosRepository.findOne({ where: { id } });
 
-    if (!usuario) {
-      throw new NotFoundException(`Usuário com ID ${id} não encontrado.`);
+      if (!usuario) {
+        throw new NotFoundException(`Usuário com ID ${id} não encontrado.`);
+      }
+
+      // Remover o usuário do banco de dados
+      await this.usuariosRepository.remove(usuario);
+    } catch (error) {
+      throw new InternalServerErrorException('Erro ao remover usuário.');
     }
-
-    // Remover o usuário do banco de dados
-    await this.usuariosRepository.remove(usuario);
   }
 
-  // Buscar um usuário por email
   async findByEmail(email: string): Promise<Usuarios> {
-    const usuario = await this.usuariosRepository.findOne({ where: { email } });
+    try {
+      const usuario = await this.usuariosRepository.findOne({
+        where: { email },
+      });
 
-    if (!usuario) {
-      throw new NotFoundException(`Usuário com email ${email} não encontrado.`);
+      if (!usuario) {
+        throw new NotFoundException(
+          `Usuário com email ${email} não encontrado.`,
+        );
+      }
+
+      return usuario;
+    } catch (error) {
+      throw new InternalServerErrorException(
+        'Erro ao buscar usuário por email. Detalhes: ' + error.message,
+      );
     }
-
-    return usuario;
   }
 }
