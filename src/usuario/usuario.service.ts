@@ -9,7 +9,7 @@ import { Usuarios } from 'src/entities/Usuarios'; // Entidade de usuário
 import { Repository } from 'typeorm';
 import { CreateUsuarioDto } from './dto/create-usuario.dto'; // DTO para criar usuário
 import { UpdateUsuarioDto } from './dto/update-usuario.dto'; // DTO para atualizar usuário
-import * as bcrypt from 'bcrypt'; // Biblioteca para criptografia
+import * as bcrypt from 'bcryptjs'; // Biblioteca para criptografia
 
 @Injectable()
 export class UsuarioService {

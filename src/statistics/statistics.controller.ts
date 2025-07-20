@@ -29,4 +29,34 @@ export class StatisticsController {
     const usuarioId = req.user.id;
     return this.statisticsService.buscarTarefasRecentes(usuarioId);
   }
+
+  /**
+   * Análise 1: Produtividade por Usuário
+   * Retorna métricas de produtividade do usuário autenticado
+   */
+  @Get('productivity')
+  async GetProductivityAnalysis(@Request() req: AuthRequest) {
+    const usuarioId = req.user.id;
+    return this.statisticsService.analisarProdutividadePorUsuario(usuarioId);
+  }
+
+  /**
+   * Análise 3: Análise Temporal
+   * Retorna tendências temporais na criação de tarefas
+   */
+  @Get('temporal-trends')
+  async GetTemporalTrends(@Request() req: AuthRequest) {
+    const usuarioId = req.user.id;
+    return this.statisticsService.analisarTendenciasTemporais(usuarioId);
+  }
+
+  /**
+   * Análise 7: Análise Preditiva
+   * Retorna previsões baseadas no histórico de tarefas
+   */
+  @Get('predictive')
+  async GetPredictiveAnalysis(@Request() req: AuthRequest) {
+    const usuarioId = req.user.id;
+    return this.statisticsService.analisePreditiva(usuarioId);
+  }
 }
