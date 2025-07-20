@@ -15,6 +15,13 @@ import { LocalAuthGuard } from './Guards/local-auth.guard';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  /**
+   * Autentica um usuário e retorna um token JWT.
+   * Este endpoint é público e não requer autenticação prévia.
+   * 
+   * @param req Requisição contendo as credenciais do usuário
+   * @returns Token JWT para autenticação
+   */
   @IsPublic()
   @Post('auth')
   @HttpCode(HttpStatus.OK)
