@@ -81,13 +81,13 @@ export class StatisticsQueries {
         'tarefa.prioridade',
         'tarefa.criadoEm',
         'historico.alteradoEm',
-        'historico.statusId',
+        'historico.statusNovoId',
       ])
       .where('tarefa.usuarioId = :usuarioId', { usuarioId })
       .andWhere('tarefa.statusId = 3') // Tarefas concluídas
       .andWhere('tarefa.criadoEm >= DATE_SUB(NOW(), INTERVAL 90 DAY)')
       .orderBy('tarefa.criadoEm', 'DESC');
-  }
+  } 
 
   /**
    * Query para tarefas em andamento
