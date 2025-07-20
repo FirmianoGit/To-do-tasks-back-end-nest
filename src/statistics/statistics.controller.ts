@@ -74,7 +74,7 @@ export class StatisticsController {
   async GetProductivityAnalysis(@Request() req: AuthRequest) {
     const usuarioId = req.user.id;
     return this.statisticsService.analisarProdutividadePorUsuario(usuarioId);
-  }
+  } 
 
   /**
    * Análise 3: Análise Temporal

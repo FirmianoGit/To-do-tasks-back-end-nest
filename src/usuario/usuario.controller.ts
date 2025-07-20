@@ -1,6 +1,7 @@
 import { Body, Controller, Delete, Param, Post, Put } from '@nestjs/common';
 import { CreateUsuarioDto } from './dto/create-usuario.dto';
 import { UpdateUsuarioDto } from './dto/update-usuario.dto';
+import { TrocarSenhaDto } from './dto/trocar-senha.dto';
 import { UsuarioService } from './usuario.service';
 import { IsPublic } from 'src/Common/Decorators/is-public.decorator';
 
@@ -34,6 +35,18 @@ export class UsuarioController {
   }
 
   /**
+   * Troca a senha do usuário autenticado.
+   * 
+   * @param trocarSenhaDto Dados para troca de senha (senha atual e nova senha)
+   * @returns Confirmação da troca de senha
+   */
+  @IsPublic()
+  @Post('trocar-senha')
+  trocarSenha(@Body() trocarSenhaDto: TrocarSenhaDto) {
+    return this.usuarioService.changePassword(trocarSenhaDto.email, trocarSenhaDto.senha);
+  }
+
+  /**
    * Remove um usuário do sistema pelo ID.
    * 
    * @param id ID do usuário a ser removido
@@ -42,5 +55,5 @@ export class UsuarioController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.usuarioService.remove(+id);
-  }
+  } 
 }

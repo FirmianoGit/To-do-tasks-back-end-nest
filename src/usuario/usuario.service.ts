@@ -4,6 +4,7 @@ import {
   NotFoundException,
   ConflictException,
   InternalServerErrorException,
+  BadRequestException,
 } from '@nestjs/common';
 import { Usuarios } from 'src/entities/Usuarios'; // Entidade de usuário
 import { Repository } from 'typeorm';
@@ -23,6 +24,7 @@ export class UsuarioService {
       // Criptografar a senha antes de salvar no banco
       const salt = await bcrypt.genSalt(10);
       const hashedPassword = await bcrypt.hash(createUsuarioDto.senha, salt);
+      console.log(hashedPassword);
 
       // Substituir a senha pelo hash no DTO
       createUsuarioDto.senha = hashedPassword;
@@ -73,6 +75,39 @@ export class UsuarioService {
       await this.usuariosRepository.remove(usuario);
     } catch (error) {
       throw new InternalServerErrorException('Erro ao remover usuário.');
+    }
+  }
+
+  //trocar a senha com o email
+  async changePassword(email: string, senha: string): Promise<void> {
+    try {
+      if (!email || !senha) {
+        throw new BadRequestException('Email e nova senha são obrigatórios.');
+      }
+
+      const usuario = await this.usuariosRepository.findOne({ where: { email } });
+
+      if (!usuario) {
+        throw new NotFoundException(`Usuário com email ${email} não encontrado.`);
+      }
+
+      if (typeof senha !== 'string' || senha.trim().length < 6) {
+        throw new BadRequestException('A nova senha deve ter pelo menos 6 caracteres.');
+      }
+
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(senha, salt);
+
+      usuario.senha = hashedPassword;
+
+      await this.usuariosRepository.save(usuario);
+    } catch (error) {
+      if (error instanceof NotFoundException || error instanceof BadRequestException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(
+        'Erro ao trocar a senha do usuário. Detalhes: ' + (error.message || error),
+      );
     }
   }
 
