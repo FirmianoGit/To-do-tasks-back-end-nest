@@ -5,6 +5,7 @@ import { Usuarios } from 'src/entities/Usuarios';
 import { UsuarioService } from 'src/usuario/usuario.service';
 import { UserPayload } from '../Common/Auth-models/UserPayload';
 import { UserToken } from '../Common/Auth-models/UserToken';
+import { UpdateUsuarioDto } from 'src/usuario/dto/update-usuario.dto';
 
 @Injectable()
 export class AuthService {
@@ -38,15 +39,36 @@ export class AuthService {
   }
 
   // Gerar token JWT para o usuário autenticado
-  async login(usuario: Usuarios): Promise<UserToken> {
+  async login(usuario: Usuarios): Promise<UserToken & { usuario: any }> {
     const payload: UserPayload = {
       sub: usuario.id,
-      chave: usuario.email, // O campo `chave` foi usado no payload
+      chave: usuario.email,
     };
 
-    const jwtToken = this.jwtService.sign(payload); // Corrigido camelCase
+    const jwtToken = this.jwtService.sign(payload);
+
+    // Remove a senha do objeto usuário antes de retornar
+    const { senha, ...usuarioSemSenha } = usuario;
+
     return {
       access_token: jwtToken,
+      usuario: usuarioSemSenha,
     };
+  }
+
+  // Trocar a senha de um usuário já existente
+  // Recebe o usuário (entidade) e a nova senha em texto puro
+  // Mantém o mesmo nível de encriptação (bcrypt com salt rounds = 10) usando o método do UsuarioService
+  async trocarSenha(usuario: UpdateUsuarioDto, novaSenha: string): Promise<void> {
+    if (!usuario || !usuario.email) {
+      throw new Error('Usuário inválido fornecido para troca de senha.');
+    }
+
+    if (!novaSenha || typeof novaSenha !== 'string' || novaSenha.trim().length < 6) {
+      throw new Error('A nova senha deve ter pelo menos 6 caracteres.');
+    }
+
+    // Reaproveita o método já existente no UsuarioService que faz validações e hashing
+    await this.userService.changePassword(usuario.email, novaSenha);
   }
 }

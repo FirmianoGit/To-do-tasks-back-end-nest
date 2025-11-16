@@ -16,7 +16,7 @@ export class Usuarios {
   nomeUsuario: string; // Armazena o nome do usuário como string com limite de 255 caracteres.
 
   // Coluna para armazenar a senha do usuário com limite de 255 caracteres
-  @Column('varchar', { name: 'senha', length: 255 })
+  @Column('varchar', { name: 'senha', length: 255, nullable: true })
   senha: string; // Armazena a senha como string com limite de 255 caracteres.
 
   // Relacionamento OneToMany com a entidade Tarefas. Cada usuário pode ter várias tarefas.
